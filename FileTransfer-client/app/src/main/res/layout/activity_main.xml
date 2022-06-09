@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#fff"
+        android:translationZ="10dp"
+        android:id="@+id/rl_choose_comp">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="20dp"
+            android:text="Select target computery:"
+            android:textColor="#000"
+            android:textSize="20sp"
+            android:id="@+id/tv_choose_comp_title"
+            android:textAlignment="center" />
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/lv_ipaddresses"
+            android:layout_below="@+id/tv_choose_comp_title"
+            android:layout_marginBottom="50dp"/>
+
+        <ProgressBar
+            android:id="@+id/pb_choose_comp"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:progress="0" />
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/rl_app">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:id="@+id/rl_app_header"
+            android:background="#7F11CF">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Connection to"
+                android:textColor="#fff"
+                android:textSize="20sp"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:layout_centerVertical="true"
+                android:id="@+id/tv_app_header"/>
+
+        </RelativeLayout>
+
+        <com.tomecki.filetransfer_client.LockableScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="200dp"
+            android:layout_below="@+id/rl_app_header"
+            android:id="@+id/hsv_app_gallery">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/hsv_app_gallery_layout"
+                android:orientation="horizontal">
+
+            </LinearLayout>
+        </com.tomecki.filetransfer_client.LockableScrollView>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/iv_upload_icon"
+            android:visibility="gone"
+            android:src="@drawable/upload"
+            android:background="#80FFFFFF"
+            android:translationZ="20dp"/>
+
+        <Button
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            android:id="@+id/btn_select_file"
+            android:layout_centerHorizontal="true"
+            android:layout_above="@+id/pb_app_main"
+            android:layout_marginBottom="20dp"
+            android:text="Select file"
+            android:textSize="20sp"
+            android:onClick="onClick"/>
+
+        <ProgressBar
+            android:id="@+id/pb_app_main"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:progress="0"
+            android:layout_above="@+id/tv_debug_window"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_alignParentBottom="true"
+            android:text=""
+            android:padding="5dp"
+            android:id="@+id/tv_debug_window"/>
+
+    </RelativeLayout>
+</RelativeLayout>
