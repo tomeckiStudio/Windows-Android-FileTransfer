@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Text;
 using System.Threading;
@@ -38,7 +38,7 @@ namespace FileTransfer_server
             try
             {
                 debug_window.Text = "Starting server..." + "\n" + debug_window.Text;
-                server_socket = new ServerSocket(6868);
+                server_socket = new ServerSocket(6869);
                 debug_window.Text = "Waiting for file..." + "\n" + debug_window.Text;
                 
                 thread_receive_file = new System.Threading.Thread(new ThreadStart(ReceiveFile));
@@ -132,7 +132,9 @@ namespace FileTransfer_server
                                     target_socket.close();
                                     server_socket.close();
                                     din.close();
-                                    rw.close();
+                                    if(rw != null)
+                                        rw.close();
+
                                     current_file_pointer = 0;
 
                                     debug_window.Invoke(new Action(delegate ()
@@ -149,6 +151,11 @@ namespace FileTransfer_server
                                     target_socket = server_socket.accept();
                                     din = new DataInputStream(target_socket.getInputStream());
                                     dout = new DataOutputStream(target_socket.getOutputStream());
+                                }
+                                else if("GetName".Equals(Encoding.UTF8.GetString(recv_data)))
+                                {
+                                    dout.write(CreateDataPacket(Encoding.UTF8.GetBytes("100"), Encoding.UTF8.GetBytes(InetAddress.getLocalHost().getHostName())));
+                                    dout.flush();
                                 }
                                 break;
                         }
