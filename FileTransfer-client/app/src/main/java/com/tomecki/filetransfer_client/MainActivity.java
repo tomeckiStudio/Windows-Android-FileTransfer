@@ -47,6 +47,7 @@ import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.Socket;
 import java.net.SocketException;
@@ -63,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
     ProgressBar pb_app_main, pb_choose_comp;
     ListView lv_ip_addresses;
     Thread connect_and_send_file;
+    Thread connect_and_get_server_name;
     LinearLayout hsv_app_gallery_layout;
     RelativeLayout rl_choose_comp;
     TextView tv_app_header, tv_debug_window;
@@ -74,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
     HashMap<String, String> ipAddresses = new HashMap<>();
     ArrayList<String> listItems = new ArrayList<>();
     ArrayAdapter<String> adapter;
+    Socket getServerNameSocket;
 
     float _yDelta;
     String hostname = "", target_comp = "", path = "";
@@ -164,12 +167,50 @@ public class MainActivity extends AppCompatActivity {
                     final InetAddress address = InetAddress.getByAddress(ip);
                     String hostName = "", hostAddress = "";
 
-                    if (address.isReachable(30)) {
-                        if (!address.getHostName().equals(address.getHostAddress())) {
-                            hostName = address.getHostName();
-                            hostAddress = address.getHostAddress();
+                    getServerNameSocket = new Socket();
+
+                    try {
+                        getServerNameSocket.connect(new InetSocketAddress(address.getHostAddress(), 6869), 200);
+
+                        MainActivity obj = MainActivity.getInstance();
+                        Socket obj_client = getServerNameSocket;
+                        DataInputStream din = new DataInputStream(obj_client.getInputStream());
+                        DataOutputStream dout = new DataOutputStream(obj_client.getOutputStream());
+
+                        dout.write(obj.CreateDataPacket("127".getBytes("UTF8"), "GetName".getBytes("UTF8")));
+                        dout.flush();
+
+                        boolean loop_break = false;
+                        while (true) {
+                            if (din.read() == 2) {
+                                byte[] cmd_buff = new byte[3];
+                                din.read(cmd_buff, 0, cmd_buff.length);
+                                byte[] recv_buff = obj.ReadStream(din);
+                                switch (Integer.parseInt(new String(cmd_buff))) {
+                                    case 100:
+                                        hostName = new String(recv_buff);
+                                        hostAddress = address.getHostAddress();
+
+                                        loop_break = true;
+                                        break;
+                                }
+                            }
+                            if (loop_break) {
+                                dout.write(obj.CreateDataPacket("127".getBytes("UTF8"), "Close".getBytes("UTF8")));
+                                dout.flush();
+                                dout.close();
+                                din.close();
+                                obj_client.close();
+                                break;
+                            }
                         }
+
+                    } catch (IOException exception) {
+                        Log.e("siema2", ""+address);
+                    } finally {
+                        getServerNameSocket.close();
                     }
+
                     publishProgress(String.valueOf((int) ((i / 254.0) * 100)), hostName, hostAddress);
                 }
             } catch (Exception e) {
